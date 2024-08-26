@@ -35,7 +35,15 @@ let bird6;
 let birdPositions = [
 
 ]
+let birdColors = []
 
+//add 7 colors that are tints to birdColors
+//   birdColors.push({r: Math.random(), g: Math.random(), b: Math.random(), isColor: true});
+
+for(let i = 0; i < 7; i++){
+  //   birdColors.push(new THREE.Color(0xffffff).offsetHSL(0, 0, 0.1*i));
+    birdColors.push({r: Math.random(), g: Math.random(), b: Math.random(), isColor: true});
+}
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
@@ -82,15 +90,31 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
       gltf.scene.rotation.y = Math.PI*.5;
       
       mixer = new THREE.AnimationMixer(gltf.scene);
+      console.log(gltf.scene);
       console.log(gltf.animations);
       jumpanimation = mixer.clipAction(gltf.animations[0]);
       jumpanimation.timeScale = 2;
       console.log(jumpanimation);
-      jumpanimation.play();
-
       bird1 = gltf.scene;
+      //go through the children of bird1 and find a child named body
+        bird1.children[0].children.forEach((child) => {
+            if(child.name === "body"){
+                let body = child;
+                body.children.forEach((child) => {
+                    if(child.name === "Plane003"){
+                        let body2 = child;
+                        console.log(body2.material.color);
+                        //give a random number from 0 to number of colors in birdColors
+                        let randomColor = Math.floor(Math.random() * birdColors.length);
+                        body2.material.color = birdColors[randomColor];
+                        console.log(body2.material.color);
+                    }
+                });
+            }
 
-      pole.add(bird1);
+
+
+         pole.add(bird1);
           bird1.position.set(
             birdstand.position.x,
             birdstand.position.y+1.1,
@@ -100,12 +124,65 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
       
 
     });
+
+    loadBirds("/models/birdjump.glb", mixer1, jumpanimation1, bird2, birdstand1);
+    loadBirds("/models/birdjump.glb", mixer2, jumpanimation2, bird3, birdstand2);
+    loadBirds("/models/birdjump.glb", mixer3, jumpanimation3, bird4, birdstand3);
+    loadBirds("/models/birdjump.glb", mixer4, jumpanimation4, bird5, birdstand4);
+    loadBirds("/models/birdjump.glb", mixer5, jumpanimation5, bird6, birdstand5);
+    loadBirds("/models/birdjump.glb", mixer6, jumpanimation6, bird7, birdstand6);
+    
+
+    
 });
+})
 
 /**
  * Floor
  */
+// create a function to load in the birds
+// create a function to load in the birds
+function loadBirds(modelpath, mixer, animation,birdNumber, stand ){
 
+    gltfLoader.load(modelpath, (gltf) => {
+      gltf.scene.scale.set(0.005, 0.005, 0.005)
+      gltf.scene.rotation.y = Math.PI*.5;
+      
+      mixer = new THREE.AnimationMixer(gltf.scene);
+      console.log(gltf.scene);
+      console.log(gltf.animations);
+      animation = mixer.clipAction(gltf.animations[0]);
+      animation.timeScale = 2;
+      console.log(animation);
+      birdNumber = gltf.scene;
+      //go through the children of bird1 and find a child named body
+        birdNumber.children[0].children.forEach((child) => {
+            if(child.name === "body"){
+                let body = child;
+                body.children.forEach((child) => {
+                    if(child.name === "Plane003"){
+                        let body2 = child;
+                        console.log(body2.material.color);
+                        //give a random number from 0 to number of colors in birdColors
+                        let randomColor = Math.floor(Math.random() * birdColors.length);
+                        body2.material.color = birdColors[randomColor];
+                        console.log(body2.material.color);
+                    }
+                });
+            }
+
+         pole.add(birdNumber);
+          birdNumber.position.set(
+            stand.position.x,
+            stand.position.y+1.1,
+            stand.position.z
+          );
+
+      
+
+    });
+});
+}
 
 
 /**
