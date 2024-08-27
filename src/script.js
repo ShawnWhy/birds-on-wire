@@ -16,6 +16,7 @@ let mixer2 ;
 let mixer3 ;
 let mixer4 ;
 let mixer5 ;
+let mixer6;
 let jumpanimation;
 let jumpanimation1;
 let jumpanimation2;
@@ -31,6 +32,8 @@ let bird3;
 let bird4;
 let bird5;
 let bird6;
+let bird7;
+
 
 let birdPositions = [
 
@@ -95,6 +98,7 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
       jumpanimation = mixer.clipAction(gltf.animations[0]);
       jumpanimation.timeScale = 2;
       console.log(jumpanimation);
+      jumpanimation.play();
       bird1 = gltf.scene;
       //go through the children of bird1 and find a child named body
         bird1.children[0].children.forEach((child) => {
@@ -125,13 +129,12 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
 
     });
 
-    loadBirds("/models/birdjump.glb", mixer1, jumpanimation1, bird2, birdstand1);
-    loadBirds("/models/birdjump.glb", mixer2, jumpanimation2, bird3, birdstand2);
-    loadBirds("/models/birdjump.glb", mixer3, jumpanimation3, bird4, birdstand3);
-    loadBirds("/models/birdjump.glb", mixer4, jumpanimation4, bird5, birdstand4);
-    loadBirds("/models/birdjump.glb", mixer5, jumpanimation5, bird6, birdstand5);
-    loadBirds("/models/birdjump.glb", mixer6, jumpanimation6, bird7, birdstand6);
-    
+    loadBirds("/models/birdjump.glb", "mixer1", bird2, birdstand1);
+    loadBirds("/models/birdjump.glb", "mixer2", bird3, birdstand2);
+    loadBirds("/models/birdjump.glb", "mixer3", bird4, birdstand3);
+    loadBirds("/models/birdjump.glb", "mixer4", bird5, birdstand4);
+    loadBirds("/models/birdjump.glb", "mixer5", bird6, birdstand5);
+    // loadBirds("/models/birdjump.glb", mixer6, jumpanimation6, bird7, birdstand6);
 
     
 });
@@ -142,18 +145,51 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
  */
 // create a function to load in the birds
 // create a function to load in the birds
-function loadBirds(modelpath, mixer, animation,birdNumber, stand ){
+function loadBirds(modelpath, birdMixer,birdNumber, stand ){
 
     gltfLoader.load(modelpath, (gltf) => {
       gltf.scene.scale.set(0.005, 0.005, 0.005)
       gltf.scene.rotation.y = Math.PI*.5;
       
-      mixer = new THREE.AnimationMixer(gltf.scene);
-      console.log(gltf.scene);
-      console.log(gltf.animations);
-      animation = mixer.clipAction(gltf.animations[0]);
-      animation.timeScale = 2;
-      console.log(animation);
+      switch(birdMixer){
+        case "mixer1":
+            mixer1 = new THREE.AnimationMixer(gltf.scene);
+            jumpanimation1 = mixer1.clipAction(gltf.animations[0]);
+            jumpanimation1.timeScale = 2;
+            jumpanimation1.play();
+            break;
+        case "mixer2":
+            mixer2 = new THREE.AnimationMixer(gltf.scene);
+            jumpanimation2 = mixer2.clipAction(gltf.animations[0]);
+            jumpanimation2.timeScale = 2;
+            jumpanimation2.play();
+            break;
+        case "mixer3":
+            mixer3 = new THREE.AnimationMixer(gltf.scene);
+            jumpanimation3 = mixer3.clipAction(gltf.animations[0]);
+            jumpanimation3.timeScale = 2;
+            jumpanimation3.play();
+            break;
+        case "mixer4":
+            mixer4 = new THREE.AnimationMixer(gltf.scene);
+            jumpanimation4 = mixer4.clipAction(gltf.animations[0]);
+            jumpanimation4.timeScale = 2;
+            jumpanimation4.play();
+            break;
+        case "mixer5":
+            mixer5 = new THREE.AnimationMixer(gltf.scene);
+            jumpanimation5 = mixer5.clipAction(gltf.animations[0]);
+            jumpanimation5.timeScale = 2;
+            jumpanimation5.play();
+            break;
+        case "mixer6":
+            mixer6 = new THREE.AnimationMixer(gltf.scene);
+            jumpanimation6 = mixer6.clipAction(gltf.animations[0]);
+            jumpanimation6.timeScale = 2;
+            jumpanimation6.play();
+            break;
+    }
+
       birdNumber = gltf.scene;
       //go through the children of bird1 and find a child named body
         birdNumber.children[0].children.forEach((child) => {
@@ -177,8 +213,9 @@ function loadBirds(modelpath, mixer, animation,birdNumber, stand ){
             stand.position.y+1.1,
             stand.position.z
           );
-
-      
+    console.log(birdMixer)
+      console.log(mixer,mixer1, mixer2, mixer3, mixer4, mixer5);
+      console.log(jumpanimation, jumpanimation1, jumpanimation2, jumpanimation3, jumpanimation4, jumpanimation5);
 
     });
 });
@@ -261,11 +298,29 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
-
-    if(mixer)
+   if (mixer) {
+     mixer.update(deltaTime);
+   }
+    if(mixer1)
     {
-        mixer.update(deltaTime)
+        mixer1.update(deltaTime)
     }
+       if (mixer2) {
+         mixer2.update(deltaTime);
+       }
+
+          if (mixer3) {
+            mixer3.update(deltaTime);
+          }
+
+             if (mixer4) {
+               mixer4.update(deltaTime);
+             }
+
+                if (mixer5) {
+                  mixer5.update(deltaTime);
+                }
+
 
     // Update controls
     controls.update()
