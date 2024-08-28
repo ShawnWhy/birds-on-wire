@@ -4,11 +4,51 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import GUI from 'lil-gui'
 
+// Scene
+const scene = new THREE.Scene()
+
+ const sizes = {
+   width: window.innerWidth,
+   height: window.innerHeight,
+ };
+
+/**
+ * Camera
+ */
+// Base camera
+// const camera = new THREE.OrthographicCamera(-sizes.width / 2, sizes.width / 2, sizes.height / 2, -sizes.height / 2, -100, 1000)
+// camera.position.set(10, 7, 0);
+
+const camera = new THREE.PerspectiveCamera(100, sizes.width / sizes.height, 0.1, 1000)
+camera.position.set(-8, 7, 0)
+scene.add(camera)
+
+//raycaster 
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+mouse.x = null;
+mouse.y = null;
+
+window.addEventListener("mousemove", (event) => {
+  mouse.x = (event.clientX / sizes.width) * 2 - 1;
+  mouse.y = -(event.clientY / sizes.height) * 2 + 1;
+
+  console.log(mouse)
+});
+
+
+let birdIntersect
+let bird1Intersect;
+let bird2Intersect;
+let bird3Intersect;
+let bird4Intersect;
+let bird5Intersect;
+let bird6Intersect;
+let bird7Intersect;
 /**
  * Base
  */
 // Debug
-const gui = new GUI()
 //ANIMATIONS
 let mixer ;
 let mixer1;
@@ -17,6 +57,8 @@ let mixer3 ;
 let mixer4 ;
 let mixer5 ;
 let mixer6;
+let mixer7;
+
 let jumpanimation;
 let jumpanimation1;
 let jumpanimation2;
@@ -24,6 +66,8 @@ let jumpanimation3;
 let jumpanimation4;
 let jumpanimation5;
 let jumpanimation6;
+let jumpanimation7;
+let jumpanimation8;
 
 let pole;
 let bird1;
@@ -33,6 +77,7 @@ let bird4;
 let bird5;
 let bird6;
 let bird7;
+let bird8;
 
 
 let birdPositions = [
@@ -50,8 +95,7 @@ for(let i = 0; i < 7; i++){
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
-// Scene
-const scene = new THREE.Scene()
+
 
 /**
  * Models
@@ -129,11 +173,11 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
 
     });
 
-    loadBirds("/models/birdjump.glb", "mixer1", bird2, birdstand1);
-    loadBirds("/models/birdjump.glb", "mixer2", bird3, birdstand2);
-    loadBirds("/models/birdjump.glb", "mixer3", bird4, birdstand3);
-    loadBirds("/models/birdjump.glb", "mixer4", bird5, birdstand4);
-    loadBirds("/models/birdjump.glb", "mixer5", bird6, birdstand5);
+    loadBirds("/models/birdjump.glb", "mixer1",  birdstand1);
+    loadBirds("/models/birdjump.glb", "mixer2",  birdstand2);
+    loadBirds("/models/birdjump.glb", "mixer3",  birdstand3);
+    loadBirds("/models/birdjump.glb", "mixer4",  birdstand4);
+    loadBirds("/models/birdjump.glb", "mixer5",  birdstand5);
     // loadBirds("/models/birdjump.glb", mixer6, jumpanimation6, bird7, birdstand6);
 
     
@@ -145,7 +189,7 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
  */
 // create a function to load in the birds
 // create a function to load in the birds
-function loadBirds(modelpath, birdMixer,birdNumber, stand ){
+function loadBirds(modelpath, birdMixer, stand ){
 
     gltfLoader.load(modelpath, (gltf) => {
       gltf.scene.scale.set(0.005, 0.005, 0.005)
@@ -162,35 +206,46 @@ function loadBirds(modelpath, birdMixer,birdNumber, stand ){
             mixer2 = new THREE.AnimationMixer(gltf.scene);
             jumpanimation2 = mixer2.clipAction(gltf.animations[0]);
             jumpanimation2.timeScale = 2;
-            jumpanimation2.play();
+            //freeze animation at frame 1
+            // jumpanimation2.pause()
+
+            jumpanimation2.stop();
             break;
         case "mixer3":
             mixer3 = new THREE.AnimationMixer(gltf.scene);
             jumpanimation3 = mixer3.clipAction(gltf.animations[0]);
             jumpanimation3.timeScale = 2;
-            jumpanimation3.play();
+            jumpanimation3.time = 0;
+            jumpanimation3.loop = THREE.LoopOnce;
+            jumpanimation3.play()
+            jumpanimation3.paused = true;
+            console.log(jumpanimation3)
+            // setTimeout(() => {
+            //                 jumpanimation3.pause=true;
+
+            // }, 1000);
             break;
         case "mixer4":
             mixer4 = new THREE.AnimationMixer(gltf.scene);
             jumpanimation4 = mixer4.clipAction(gltf.animations[0]);
             jumpanimation4.timeScale = 2;
-            jumpanimation4.play();
+            // jumpanimation4.play();
             break;
         case "mixer5":
             mixer5 = new THREE.AnimationMixer(gltf.scene);
             jumpanimation5 = mixer5.clipAction(gltf.animations[0]);
             jumpanimation5.timeScale = 2;
-            jumpanimation5.play();
+            // jumpanimation5.play();
             break;
         case "mixer6":
             mixer6 = new THREE.AnimationMixer(gltf.scene);
             jumpanimation6 = mixer6.clipAction(gltf.animations[0]);
             jumpanimation6.timeScale = 2;
-            jumpanimation6.play();
+            // jumpanimation6.play();
             break;
     }
 
-      birdNumber = gltf.scene;
+      let birdNumber = gltf.scene;
       //go through the children of bird1 and find a child named body
         birdNumber.children[0].children.forEach((child) => {
             if(child.name === "body"){
@@ -206,16 +261,43 @@ function loadBirds(modelpath, birdMixer,birdNumber, stand ){
                     }
                 });
             }
-
-         pole.add(birdNumber);
+      
           birdNumber.position.set(
             stand.position.x,
             stand.position.y+1.1,
             stand.position.z
           );
+            switch(birdMixer){
+            case "mixer1":
+                bird1 = birdNumber;
+                pole.add(bird1);
+                break;
+            case "mixer2":
+                bird2 = birdNumber;
+                pole.add(bird2);
+                break;
+            case "mixer3":
+                bird3 = birdNumber;
+                pole.add(bird3);
+                break;
+            case "mixer4":
+                bird4 = birdNumber;
+                pole.add(bird4);
+                break;
+            case "mixer5":
+                bird5 = birdNumber;
+                pole.add(bird5);
+                break;
+            case "mixer6":
+                bird6 = birdNumber;
+                pole.add(bird6);
+                break;
+        }
+
+                
+         
     console.log(birdMixer)
-      console.log(mixer,mixer1, mixer2, mixer3, mixer4, mixer5);
-      console.log(jumpanimation, jumpanimation1, jumpanimation2, jumpanimation3, jumpanimation4, jumpanimation5);
+      console.log(bird1, bird2, bird3, bird4, bird5, bird6, bird7);
 
     });
 });
@@ -239,13 +321,6 @@ directionalLight.shadow.camera.bottom = - 7
 directionalLight.position.set(5, 5, 5)
 scene.add(directionalLight)
 
-/**
- * Sizes
- */
-const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
-}
 
 window.addEventListener('resize', () =>
 {
@@ -262,14 +337,7 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-/**
- * Camera
- */
-// Base camera
-const camera = new THREE.OrthographicCamera(-sizes.width / 2, sizes.width / 2, sizes.height / 2, -sizes.height / 2, -100, 1000)
-// const camera = new THREE.PerspectiveCamera(100, sizes.width / sizes.height, 0.1, 1000)
-camera.position.set(10, 7, 0)
-scene.add(camera)
+
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
@@ -295,6 +363,29 @@ let previousTime = 0
 
 const tick = () =>
 {
+    raycaster.setFromCamera(mouse, camera, 0.1, 1000);
+
+      if (bird3 != null) {
+        bird3Intersect = raycaster.intersectObject(bird3);
+        // console.log(hornIntersect)
+        if (bird3Intersect.length > 0) {
+            console.log("bird3Intersect");
+            console.log(bird3Intersect);
+                            // jumpanimation3.time = 0;
+
+            // jumpanimation4.play();
+            jumpanimation3.paused = false;
+
+            setTimeout(() => {
+                jumpanimation4.reset();
+                jumpanimation3.time=0;
+                jumpanimation3.paused = true;
+            }, 1000);
+            
+          }
+        }
+      
+    
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
