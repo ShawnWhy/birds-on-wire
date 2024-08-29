@@ -7,6 +7,16 @@ import GUI from 'lil-gui'
 // Scene
 const scene = new THREE.Scene()
 
+//animation triggers
+let trigger = "on";
+let trigger2 = "on";
+let trigger3 = "on";
+let trigger4 = "on";
+let trigger5 = "on";
+let trigger6 = "on";
+let trigger7 = "on";
+let trigger8 = "on";
+
  const sizes = {
    width: window.innerWidth,
    height: window.innerHeight,
@@ -369,7 +379,8 @@ const tick = () =>
       if (bird3 != null) {
         bird3Intersect = raycaster.intersectObject(bird3);
         // console.log(hornIntersect)
-        if (bird3Intersect.length > 0) {
+        if (bird3Intersect.length > 0 && trigger3 == "on") {
+          trigger3 = "off"
             console.log("bird3Intersect");
             console.log(bird3Intersect);
                             // jumpanimation3.time = 0;
@@ -378,6 +389,7 @@ const tick = () =>
             jumpanimation3.paused = false;
 
             setTimeout(() => {
+                trigger3 = "on";
                 jumpanimation4.reset();
                 jumpanimation3.time=0;
                 jumpanimation3.paused = true;
