@@ -20,7 +20,8 @@ const scene = new THREE.Scene()
 // camera.position.set(10, 7, 0);
 
 const camera = new THREE.PerspectiveCamera(100, sizes.width / sizes.height, 0.1, 1000)
-camera.position.set(-8, 7, 0)
+camera.position.set(433.25083968221594, 512.9172604439034, 15.083707406023414)
+camera.lookAt(new THREE.Vector3(20, 0, 0))
 scene.add(camera)
 
 //raycaster 
@@ -310,16 +311,16 @@ function loadBirds(modelpath, birdMixer, stand ){
 const ambientLight = new THREE.AmbientLight(0xffffff, 2.4)
 scene.add(ambientLight)
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8)
-directionalLight.castShadow = true
-directionalLight.shadow.mapSize.set(1024, 1024)
-directionalLight.shadow.camera.far = 15
-directionalLight.shadow.camera.left = - 7
-directionalLight.shadow.camera.top = 7
-directionalLight.shadow.camera.right = 7
-directionalLight.shadow.camera.bottom = - 7
-directionalLight.position.set(5, 5, 5)
-scene.add(directionalLight)
+// const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8)
+// directionalLight.castShadow = true
+// directionalLight.shadow.mapSize.set(1024, 1024)
+// directionalLight.shadow.camera.far = 15
+// directionalLight.shadow.camera.left = - 7
+// directionalLight.shadow.camera.top = 7
+// directionalLight.shadow.camera.right = 7
+// directionalLight.shadow.camera.bottom = - 7
+// directionalLight.position.set(5, 5, 5)
+// scene.add(directionalLight)
 
 
 window.addEventListener('resize', () =>
@@ -412,7 +413,7 @@ const tick = () =>
                   mixer5.update(deltaTime);
                 }
 
-
+console.log(camera)
     // Update controls
     controls.update()
 
