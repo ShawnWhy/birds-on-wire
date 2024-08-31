@@ -11,6 +11,42 @@ const sound5 = new Audio("/sounds/5.mp3");
 const sound6 = new Audio("/sounds/6.mp3");
 const sound7 = new Audio("/sounds/7.mp3");
 const sound8 = new Audio("/sounds/8.mp3");
+const sing = new Audio("/sounds/sing.mp3");
+// create a full cover div with a image background
+let coverpage = document.createElement("div");
+coverpage.style.width = "100%";
+coverpage.style.height = "100%";
+coverpage.style.position = "fixed";
+coverpage.style.top = "0";
+coverpage.style.left = "0";
+coverpage.style.zIndex = "100";
+coverpage.style.backgroundImage = "url('/images/star2.gif')";
+coverpage.style.backgroundSize = "cover";
+coverpage.style.backgroundPosition = "center";
+coverpage.style.backgroundRepeat = "no-repeat";
+//have "Click to start h1 text in the center of the page"
+let h1 = document.createElement("h1");
+h1.style.position = "absolute";
+h1.style.top = "50%";
+h1.style.left = "50%";
+h1.style.transform = "translate(-50%, -50%)";
+h1.style.color = "white";
+h1.style.fontSize = "2rem";
+h1.style.fontFamily = "Arial";
+h1.style.textAlign = "center";
+h1.innerHTML = "Click to start";
+coverpage.appendChild(h1);
+//append the coverpage to the body
+document.body.appendChild(coverpage);
+
+//add an event listener to the coverpage
+coverpage.addEventListener("click", () => {
+  //remove the coverpage from the body
+  document.body.removeChild(coverpage);
+  //play the sound
+  sing.play();
+});
+
 
 // Scene
 const scene = new THREE.Scene();
@@ -31,6 +67,29 @@ const sizes = {
   height: window.innerHeight,
 };
 
+let background1;
+let background2;
+let background3;
+let background4;
+
+const loader = new THREE.TextureLoader();
+ loader.load("/images/star1.gif", function (texture) {
+background1 = texture;
+scene.background = background1;
+
+});
+ loader.load("/images/star2.gif", function (texture) {
+   background2 = texture;
+ });
+
+  loader.load("/images/sky-3.gif", function (texture) {
+   background3 = texture;
+ });
+
+   loader.load("/images/sky-4.gif", function (texture) {
+     background4 = texture;
+   });
+
 /**
  * Camera
  */
@@ -44,8 +103,26 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(433.25083968221594, 512.9172604439034, 15.083707406023414);
-camera.lookAt(new THREE.Vector3(20, 0, 0));
+
+function degreesToRadians(degrees) {
+  return degrees * (Math.PI / 180);
+}
+camera.position.set(
+  438.73744774106035,
+
+  430.330159021041,
+
+  -31.63689310054366
+);
+
+camera.rotation.set(
+  -1.5549827383113777,
+
+  1.103589552481979,
+
+  1.5530849414008676
+);
+
 scene.add(camera);
 
 //raycaster
@@ -143,8 +220,7 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
   let birdstand5 = gltf.scene.children[7];
   let birdstand6 = gltf.scene.children[8];
   let birdstand7 = gltf.scene.children[9];
-  console.log("birdstand7");
-  console.log(birdstand7);
+
 
   birdPositions.push(birdstand.position);
   birdPositions.push(birdstand1.position);
@@ -154,8 +230,7 @@ gltfLoader.load("/models/telephonepole.glb", (gltf) => {
   birdPositions.push(birdstand5.position);
   birdPositions.push(birdstand6.position);
   birdPositions.push(birdstand7.position);
-  console.log("locations");
-  console.log(birdPositions);
+
 
   gltfLoader.load("/models/birdjump.glb", (gltf) => {
     gltf.scene.scale.set(0.005, 0.005, 0.005);
@@ -277,7 +352,6 @@ function loadBirds(modelpath, birdMixer, stand) {
         jumpanimation5.loop = THREE.LoopOnce;
         jumpanimation5.play();
         jumpanimation5.paused = true;
-        console.log(jumpanimation5);
         break;
       case "mixer6":
         mixer6 = new THREE.AnimationMixer(gltf.scene);
@@ -298,7 +372,6 @@ function loadBirds(modelpath, birdMixer, stand) {
         jumpanimation7.loop = THREE.LoopOnce;
         jumpanimation7.play();
         jumpanimation7.paused = true;
-        console.log(jumpanimation7);
         // jumpanimation6.play();
         break;
     }
@@ -358,7 +431,6 @@ function loadBirds(modelpath, birdMixer, stand) {
 
       // console.log(birdMixer);
     });
-    console.log(bird1, bird2, bird3, bird4, bird5, bird6, bird7);
   });
 }
 
@@ -394,9 +466,9 @@ window.addEventListener("resize", () => {
 });
 
 // Controls
-const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 7, 0);
-controls.enableDamping = true;
+// const controls = new OrbitControls(camera, canvas);
+// controls.target.set(0, 20, 0);
+// controls.enableDamping = true;
 
 /**
  * Renderer
@@ -423,13 +495,13 @@ const tick = () => {
     // console.log(hornIntersect)
     if (birdIntersect.length > 0 && trigger == "on") {
       trigger = "off";
-      console.log("birdIntersect");
-      console.log(birdIntersect);
+
       // jumpanimation3.time = 0;
 
       // jumpanimation4.play();
       jumpanimation.paused = false;
       sound1.play();
+      scene.background = background3
       setTimeout(() => {
         trigger = "on";
         jumpanimation.reset();
@@ -444,13 +516,14 @@ const tick = () => {
     // console.log(hornIntersect)
     if (bird2Intersect.length > 0 && trigger2 == "on") {
       trigger = "off";
-      console.log("bird2Intersect");
-      console.log(bird2Intersect);
+
       // jumpanimation3.time = 0;
 
       // jumpanimation4.play();
       jumpanimation2.paused = false;
       sound3.play()
+            scene.background = background3;
+
 
       setTimeout(() => {
         trigger = "on";
@@ -466,9 +539,9 @@ const tick = () => {
     // console.log(hornIntersect)
     if (bird1Intersect.length > 0 && trigger1 == "on") {
       trigger1 = "off";
-      console.log("bird4Intersect");
-      console.log(bird1Intersect);
       sound2.play()
+            scene.background = background4;
+
       // jumpanimation3.time = 0;
 
       // jumpanimation4.play();
@@ -488,13 +561,14 @@ const tick = () => {
     // console.log(hornIntersect)
     if (bird3Intersect.length > 0 && trigger3 == "on") {
       trigger3 = "off";
-      console.log("bird3Intersect");
-      console.log(bird3Intersect);
+
       // jumpanimation3.time = 0;
 
       // jumpanimation4.play();
       jumpanimation3.paused = false;
       sound4.play()
+      scene.background = background4;
+
 
       setTimeout(() => {
         trigger3 = "on";
@@ -510,13 +584,14 @@ const tick = () => {
     // console.log(hornIntersect)
     if (bird4Intersect.length > 0 && trigger4 == "on") {
       trigger4 = "off";
-      console.log("bird4Intersect");
-      console.log(bird4Intersect);
+ 
       // jumpanimation3.time = 0;
 
       // jumpanimation4.play();
       jumpanimation4.paused = false;
       sound5.play()
+      scene.background = background3;
+
 
       setTimeout(() => {
         trigger4 = "on";
@@ -531,12 +606,13 @@ const tick = () => {
     // console.log(hornIntersect)
     if (bird5Intersect.length > 0 && trigger5 == "on") {
       trigger5 = "off";
-      console.log("bird5Intersect");
-      console.log(bird5Intersect);
+
       // jumpanimation3.time = 0;
 
       // jumpanimation4.play();
       sound6.play()
+            scene.background = background4;
+
       jumpanimation5.paused = false;
 
       setTimeout(() => {
@@ -552,12 +628,13 @@ const tick = () => {
     // console.log(hornIntersect)
     if (bird6Intersect.length > 0 && trigger6 == "on") {
       trigger6 = "off";
-      console.log("bird6Intersect");
-      console.log(bird6Intersect);
+
       // jumpanimation3.time = 0;
 
       // jumpanimation4.play();
       sound7.play()
+            scene.background = background3;
+
       jumpanimation6.paused = false;
 
       setTimeout(() => {
@@ -573,13 +650,14 @@ const tick = () => {
     // console.log(hornIntersect)
     if (bird7Intersect.length > 0 && trigger7 == "on") {
       trigger7 = "off";
-      console.log("bird7Intersect");
-      console.log(bird7Intersect);
+
       // jumpanimation3.time = 0;
 
       // jumpanimation4.play();
       jumpanimation7.paused = false;
       sound8.play();
+            scene.background = background4;
+
 
       setTimeout(() => {
         trigger7 = "on";
@@ -623,13 +701,18 @@ const tick = () => {
   }
 
   // Update controls
-  controls.update();
+  // controls.update();
 
   // Render
   renderer.render(scene, camera);
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);
+
+  console.log("camera")
+  // console.log(camera.position)
+  // console.log(camera.rotateOnAxis)
+  console.log(camera)
 };
 
 tick();
